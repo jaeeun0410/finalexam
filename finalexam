@@ -1,0 +1,202 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX 50
+
+typedef struct _book
+{
+ char BookName[MAX];
+ char auther[MAX];
+ char publisher[MAX];
+ char price[MAX];
+ struct _book *next;
+ struct _book *prev;
+}BookList;
+
+BookList *Head;
+BookList *Tail;
+BookList *add;
+int count=1;
+
+void InitBookList() //메모리 초기화
+{
+ Head = (BookList*)malloc(sizeof(BookList));//시작
+ Tail = (BookList*)malloc(sizeof(BookList));//마지막
+ Head->next = Tail;
+ Tail->prev = Head;
+}
+void AddBookList(BookList *add) //데이터 입력
+{
+ add = (BookList*)malloc(sizeof(BookList));
+
+ printf("------------------------------------------------\n");
+ printf("도서명,저자,출판사,가격을 입력하시오   \n");
+ printf("------------------------------------------------\n");
+ printf("          도서명을 입력하시오:        ");
+ scanf("%s",&add->BookName);                   
+ fflush(stdin);
+ printf("          저자을 입력하시오:          ");         
+ scanf("%s",&add->auther);
+ fflush(stdin);
+ printf("          출판사를 입력하시오:        ");
+ scanf("%s",&add->publisher);
+ fflush(stdin);
+ printf("          가격을 입력하시오:          ");
+ scanf("%s",&add->price);
+ fflush(stdin);
+ fflush(stdin);
+ printf("------------------------------------------------\n");
+ 
+ Tail->prev->next = add;//맨뒤에 add를 연결
+ add->prev = Tail->prev;
+
+ add->next = Tail;
+ Tail->prev = add;
+}
+
+
+void EditBookList(char *str)
+{
+ BookList *loof;
+ loof = Head->next;
+ while(loof != Tail)
+ {
+  if(strcmp(loof->BookName, str) == 0)
+  {
+ printf("바꿀 책이름 입력:");
+ gets(loof->BookName);
+   return;
+  }
+  printf("해당도서가 없습니다.");
+  loof = loof->next;
+ }
+ 
+}
+
+void ShowBookList()
+{
+ BookList *loof;
+ loof = Head->next;
+ printf("책 목록\n");
+ while(loof != Tail)
+ {
+  printf("총도서는%d권입니다.\n",count);
+  printf("도서명:%s\n", loof->BookName);
+  printf("저자명:%s\n", loof->auther);
+  printf("출판사:%s\n", loof->publisher);
+  printf("금  액:%s\n", loof->price);
+  printf("년  도:%s\n", loof->year);
+  loof = loof->next;
+  count++;
+ }
+ count=1;
+}
+
+void SaveData()
+{
+ BookList *loof;
+ FILE *fp = fopen("book.txt", "w");
+ loof = Head->next;
+ printf("프로그램을 종료합니다.\n");
+ while(loof != Tail)
+ {
+  fprintf(fp,"%s\n", loof->BookName);
+  fprintf(fp,"%s\n", loof->auther);
+  fprintf(fp,"%s\n", loof->publisher);
+  fprintf(fp,"%s\n", loof->price);
+  fprintf(fp,"%s\n", loof->year);
+
+  loof = loof->next;
+ }
+ fclose(fp);
+}
+
+void LoadData(add)
+{
+ BookList *pp;
+ FILE *fp = fopen("book.txt","r");
+ char str[50];
+ 
+ if(fp == NULL) return;
+
+ while(1)
+ {
+  if(fgets(str,50,fp) == NULL) break;
+  if(strlen(str) > 1)
+  {
+ str[strlen(str)-1] = NULL;
+// BookList1(str,fp);
+  }
+ }
+ fclose(fp);
+}
+
+void BookList(str,pp)
+{
+ BookList*pp=(BookList*)malloc(sizeof(BookList));
+
+ strcpy(pp->BookName,str);
+ strcpy(pp->publisher,str);
+ strcpy(pp->auther,str);
+ strcpy(pp->price,str);
+ strcpy(pp->year,str);
+
+  Tail->prev->next = pp;
+  pp->prev = Tail->prev;
+  pp->next = Tail;
+  Tail->prev = pp;
+}
+
+void mainlist()  //메인화면 리스트
+{
+ printf("-----------------------------------------------------\n");
+ printf("|              도서관리 프로그램 MNUE               |\n");
+ printf("|               1. 신규도서  등  록                 |\n");
+ printf("|               2. 도    서  수  정                 |\n");
+ printf("|               3. 도    서  리스트                 |\n");
+ printf("|               4. 프로그램  종  료                 |\n");
+ printf("-----------------------------------------------------\n");
+}
+
+int main()
+{
+ int x;
+ char str[50];
+
+ InitBookList();
+ LoadData();
+
+ while(1)
+ {
+  mainlist();
+  scanf("%d", &x);
+  fflush(stdin);
+  switch(x)
+  {
+  case 1:  
+ system("cls");
+ AddBookList(add);
+ system("cls");
+   break;
+  case 2:
+ system("cls");
+ printf("수정 도서 입력:");
+ gets(str);  
+ system("cls");
+   EditBookList(str);
+ system("cls");
+ break;
+  case 3:
+   system("cls");
+   ShowBookList();
+   break;
+   system("cls");
+  case 4:
+   SaveData();
+   return 0;
+   break;
+
+  }
+ }
+ return 0;
+}
